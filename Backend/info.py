@@ -5,11 +5,11 @@ import numpy as np
 # board layout
 board_array_size = 9
 board_size = 5
-resources = [(5, 4), (2, 7), (5, 1)]
+resources = [(5, 1), (4, 4), (3, 7)]
 white_hatchery = [(0, 5), (0, 4), (1, 3)]
 black_hatchery = [(7, 5), (8, 4), (8, 3)]
 hatcheries = [white_hatchery, black_hatchery]
-blocked_tiles = []
+blocked_tiles = {(3, 4)}
 
 # bug stats
 bug_cost = [1, 1, 2, 3]
@@ -29,6 +29,10 @@ def starting_bugs():
     return np.array([[3, 3, 3, 3], [3, 3, 3, 3]])
 
 
+def opposing_side(side):
+    return Side(side == Side.WHITE)
+
+
 class Phase(IntEnum):
     W_COMBAT = 0
     W_MOVE = 1
@@ -36,6 +40,12 @@ class Phase(IntEnum):
     B_COMBAT = 3
     B_MOVE = 4
     B_HATCH = 5
+
+
+class PhaseType(IntEnum):
+    COMBAT = 0
+    MOVE = 1
+    HATCH = 2
 
 
 class BugType(IntEnum):
@@ -59,3 +69,8 @@ class Direction(IntEnum):
     E = 5
 
 
+class ActionType(IntEnum):
+    KILL = 0
+    MOVE = 1
+    HATCH = 2
+    PASS = 3

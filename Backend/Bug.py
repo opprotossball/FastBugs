@@ -21,9 +21,9 @@ def get_bug_y(bug_code):
 def get_bug_moves_left(bug_code):
     return (bug_code >> 11) & 7
 
-#
-# def get_bug_army_id(bug_code):
-#     return (bug_code >> 15) & 15
+
+def get_bug_army_id(bug_code):
+    return (bug_code >> 15) & 15
 
 
 def decode_bug(bug_code):
@@ -34,8 +34,8 @@ def decode_bug(bug_code):
     x = get_bug_x(bug_code)
     y = get_bug_y(bug_code)
     moves_left = get_bug_moves_left(bug_code)
-    # army_id = get_bug_army_id(bug_code)
-    return Bug(side, bug_type, x, y, moves_left)
+    army_id = get_bug_army_id(bug_code)
+    return Bug(side, bug_type, x, y, moves_left, army_id)
 
 
 class Bug:
@@ -50,10 +50,10 @@ class Bug:
             self.set_moves_left(self.get_max_move())
         else:
             self.set_moves_left(moves_left)
-        # if army_id is None:
-        #     self.set_army_id(info.army_id_not_assigned)
-        # else:
-        #     self.set_army_id(army_id)
+        if army_id is None:
+            self.set_army_id(info.army_id_not_assigned)
+        else:
+            self.set_army_id(army_id)
 
     def set_side(self, side):
         self.bug_code &= ~1
@@ -75,9 +75,9 @@ class Bug:
         self.bug_code &= ~(7 << 11)
         self.bug_code |= (moves_left << 11)
 
-    # def set_army_id(self, army_id):
-    #     self.bug_code &= ~(15 << 15)
-    #     self.bug_code |= (army_id << 15)
+    def set_army_id(self, army_id):
+        self.bug_code &= ~(15 << 15)
+        self.bug_code |= (army_id << 15)
 
     def get_attack(self):
         return info.bug_attack[get_bug_type(self.bug_code)]
@@ -103,8 +103,8 @@ class Bug:
     def get_moves_left(self):
         return get_bug_moves_left(self.bug_code)
 
-    # def get_army_id(self):
-    #     return get_bug_army_id(self.bug_code)
+    def get_army_id(self):
+        return get_bug_army_id(self.bug_code)
 
     def __str__(self):
         lst = [self.get_side().name, self.get_type().name, f"X:{self.get_x()}", f"Y:{self.get_y()}" + f" Moves:{self.get_moves_left()}"]
