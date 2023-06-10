@@ -23,6 +23,7 @@ class GameState:
         self.active_player_resources = 0
         self.__winner = None
         self.armies = [[], []]
+        self.round = 0
 
     def copy(self, copied):
         self.board = np.copy(copied.board)
@@ -31,6 +32,7 @@ class GameState:
         self.active_player_resources = copied.active_player_resources
         self.__winner = copied.__winner
         self.armies = copy.deepcopy(copied.armies)
+        self.round = copied.round
 
     def active_side(self):
         return Side(self.phase > 2)
@@ -60,6 +62,7 @@ class GameState:
             return False
         else:
             self.__next_phase()
+            return True
 
     def kill(self, side, x, y):
         if not self.validate_action_type(info.ActionType.KILL, side):
@@ -122,7 +125,6 @@ class GameState:
         if self.board[nx, ny] != 0:  # has teammate able to move
             self.__move_recursively(nx, ny, dirc, pinned_map)
         if self.board[nx, ny] == 0:
-            print("A")
             self.__move_bug_to(x, y, nx, ny)
             pinned_map[nx, ny] = True
             self.__decrement_move(nx, ny)
@@ -133,7 +135,7 @@ class GameState:
         if not self.validate_action_type(info.ActionType.MOVE, side):
             print("Invalid phase for moving!")
             return False
-        if army_id < len(self.armies[side]):
+        if army_id >= len(self.armies[side]):
             return False
         army = self.armies[side][army_id]
         if army.moves_left < 1:
@@ -150,6 +152,7 @@ class GameState:
                 something_moved = moved_now or something_moved
         if something_moved:
             self.update_armies()
+            self.__winner = self.__check_winner()
         return something_moved
 
     def __side_at_tile(self, x, y):
@@ -166,6 +169,15 @@ class GameState:
             if neigh_side is not None and neigh_side != side:
                 return True
         return False
+
+    def __renew_moves(self, side):
+        for army in self.armies[side]:
+            for i in range(len(army.bugs)):
+                bug = decode_bug(army.bugs[i])
+                bug.set_moves_left(bug.get_max_move())
+                x, y = bug.get_x(), bug.get_y()
+                self.board[x, y] = bug.bug_code
+                army.bugs[i] = bug.bug_code
 
     def __decrement_move(self, x, y):
         bug = decode_bug(self.board[x, y])
@@ -225,16 +237,16 @@ class GameState:
         self.active_player_resources = resources
 
     def __next_phase(self):
-        if self.phase_type() != PhaseType.MOVE:
-            self.update_armies()
-        else:
-            self.__winner = self.__check_winner()  # check winner after move
+        if self.phase_type() == PhaseType.MOVE:
+            self.__renew_moves(self.active_side())
+        self.update_armies()
         self.phase += 1  # next phase
         if self.phase > 5:
             self.phase = 0
+            self.round += 1
         if self.phase_type() == PhaseType.HATCH:
             self.__gather_resources()
-        elif self.phase == PhaseType.COMBAT:
+        elif self.phase_type() == PhaseType.COMBAT:
             self.__attack_all_opponents_armies()
 
     def __attack_all_opponents_armies(self):

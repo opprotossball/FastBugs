@@ -1,4 +1,4 @@
-from info import board_array_size, board_size, Direction
+from info import board_array_size, board_size, Direction, blocked_tiles
 
 neighs = [
     (0, 1),
@@ -11,9 +11,11 @@ neighs = [
 
 
 def valid_tile(x, y):
+    if (x, y) in blocked_tiles:
+        return False
     if not ((0 <= x < board_array_size) and (0 <= y < board_array_size)):
         return False
-    if (x + y < board_size - 1) or (x + y > 2 * board_array_size - board_size):
+    if (x + y < board_size - 1) or (x + y >= 2 * board_array_size - board_size):
         return False
     return True
 

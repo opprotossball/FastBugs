@@ -54,7 +54,7 @@ class AproxBot(Player, ABC):
     def get_valid_hatches(self, game_state):
         valid_actions = []
         for bug_type in BugType:
-            if game_state.active_player_resources < bug_cost[bug_type]:
+            if game_state.active_player_resources < bug_cost[bug_type] or game_state.players_bugs[self.side, bug_type] < 1:
                 continue
             for hatch_id, (x, y) in enumerate(hatcheries[self.side]):
                 if game_state.board[x, y] == 0:

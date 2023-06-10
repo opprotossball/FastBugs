@@ -109,3 +109,6 @@ class Bug:
     def __str__(self):
         lst = [self.get_side().name, self.get_type().name, f"X:{self.get_x()}", f"Y:{self.get_y()}" + f" Moves:{self.get_moves_left()}"]
         return " ".join(lst)
+
+    def short_str(self):
+        return "".join([self.get_side().name[0], self.get_type().name[0]])
