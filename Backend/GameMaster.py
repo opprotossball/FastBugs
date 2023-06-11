@@ -6,7 +6,6 @@ import pygame.time
 
 from Backend.Bug import decode_bug
 from Backend.GameState import GameState
-from Backend.visualization import visualize_board
 from FrontEnd.Display import Display
 from FrontEnd.GameScene import GameScene
 from info import ActionType, Side, Phase

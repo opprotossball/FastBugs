@@ -2,10 +2,8 @@ import concurrent.futures
 import math
 import time
 
-from Backend.AproxBot import AproxBot
-from Backend.EagerRandomBot import EagerRandomBot
 from Backend.GameMaster import GameMaster
-from Backend.RandomBot import RandomBot
+from AI.RandomBot import RandomBot
 from Backend.info import Side
 
 

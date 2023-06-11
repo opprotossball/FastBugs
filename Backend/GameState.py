@@ -264,3 +264,13 @@ class GameState:
             if bug_code == 0 or decode_bug(bug_code).get_side() != side:
                 return None
         return side
+
+    def __str__(self):
+        for row in self.board:
+            print()
+            for bug_code in row:
+                if bug_code == 0:
+                    print("[  ]", end="")
+                else:
+                    print(f"[{decode_bug(bug_code).short_str()}]", end="")
+        print()

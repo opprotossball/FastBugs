@@ -1,5 +1,5 @@
 import random
-from Backend.AproxBot import AproxBot
+from AI.AproxBot import AproxBot
 
 
 class EagerRandomBot(AproxBot):
