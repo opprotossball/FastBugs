@@ -1,14 +1,25 @@
 import math
 import time
 
-import numpy as np
 import pygame.time
 
-from Backend.Bug import decode_bug
 from Backend.GameState import GameState
 from FrontEnd.Display import Display
 from FrontEnd.GameScene import GameScene
-from info import ActionType, Side, Phase
+from info import ActionType
+
+
+def perform_action(side, action, game):
+    action_type = action[0]
+    if action_type == ActionType.PASS:
+        return game.end_phase(side)
+    elif action_type == ActionType.KILL:
+        return game.kill(side, action[1], action[2])
+    elif action_type == ActionType.MOVE:
+        return game.move(side, army_id=action[1], dirc=action[2])
+    elif action_type == ActionType.HATCH:
+        return game.hatch(side, bug_type=action[1], hatch_id=action[2])
+    return False
 
 
 class GameMaster:
@@ -23,7 +34,7 @@ class GameMaster:
         self.display = None
         self.clock = None
         self.fps = 40
-        self.sleep_after_action = 1  # s
+        self.sleep_after_action = 0.5  # s
 
     def new_game(self, white_player, black_player, visualize=False):
         self.players = [white_player, black_player]
@@ -53,13 +64,4 @@ class GameMaster:
             self.clock.tick(self.fps)
 
     def perform_players_action(self, side, action):
-        action_type = action[0]
-        if action_type == ActionType.PASS:
-            return self.game.end_phase(side)
-        elif action_type == ActionType.KILL:
-            return self.game.kill(side, action[1], action[2])
-        elif action_type == ActionType.MOVE:
-            return self.game.move(side, army_id=action[1], dirc=action[2])
-        elif action_type == ActionType.HATCH:
-            return self.game.hatch(side, bug_type=action[1], hatch_id=action[2])
-        return False
+        return perform_action(side, action, self.game)

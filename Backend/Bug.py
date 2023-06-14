@@ -111,4 +111,4 @@ class Bug:
         return " ".join(lst)
 
     def short_str(self):
-        return "".join([self.get_side().name[0], self.get_type().name[0]])
+        return "".join([self.get_side().name[0].lower(), self.get_type().name[0]])

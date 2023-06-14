@@ -1,14 +1,13 @@
 import copy
-import math
 import random
 
 import numpy as np
 
 import info
-from Army import Army
-from Board import neigh_generator, neigh_coords, valid_tile
-from Bug import Bug, decode_bug
-from info import board_array_size, starting_bugs, Side, Phase, PhaseType
+from Backend.Army import Army
+from Backend.board import neigh_generator, neigh_coords, valid_tile
+from Backend.Bug import Bug, decode_bug
+from info import board_array_size, starting_bugs, Side, PhaseType
 
 
 class GameState:
@@ -55,6 +54,7 @@ class GameState:
         self.active_player_resources -= cost
         self.players_bugs[side, bug_type] -= 1
         self.board[x, y] = Bug(side, bug_type, x, y).bug_code
+        self.update_armies()
         return True
 
     def end_phase(self, side):
@@ -80,6 +80,7 @@ class GameState:
             return False
         attacked_army.kills -= 1
         self.board[x, y] = 0
+        self.players_bugs[attacked_side, bug.get_type()] = self.players_bugs[attacked_side, bug.get_type()] + 1
         return True
 
     def get_winner(self):
@@ -239,7 +240,8 @@ class GameState:
     def __next_phase(self):
         if self.phase_type() == PhaseType.MOVE:
             self.__renew_moves(self.active_side())
-        self.update_armies()
+        if self.phase_type() != PhaseType.HATCH:
+            self.update_armies()
         self.phase += 1  # next phase
         if self.phase > 5:
             self.phase = 0
@@ -265,7 +267,18 @@ class GameState:
                 return None
         return side
 
-    def __str__(self):
+    def bugs_iterate(self):
+        for side in self.armies:
+            for army in side:
+                for bug_code in army.bugs:
+                    yield decode_bug(bug_code)
+
+    def player_bugs_iterate(self, side):
+        for army in self.armies[side]:
+            for bug_code in army.bugs:
+                yield decode_bug(bug_code)
+
+    def visualize(self):
         for row in self.board:
             print()
             for bug_code in row:
@@ -274,3 +287,9 @@ class GameState:
                 else:
                     print(f"[{decode_bug(bug_code).short_str()}]", end="")
         print()
+
+    def position_code(self):
+        code = "W" if self.active_side() == Side.WHITE else "B"
+        for bug in self.bugs_iterate():
+            code += "-" + str(bug.bug_code)
+        return code

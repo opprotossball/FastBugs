@@ -1,15 +1,19 @@
+import random
 from abc import abstractmethod, ABC
 
+import numpy as np
+
 from Backend.Bug import decode_bug
+from Backend.GameState import GameState
 from Backend.Player import Player
-from Backend.info import PhaseType, opposing_side, Direction, ActionType, hatcheries, BugType, bug_cost, Phase
+from info import PhaseType, opposing_side, Direction, ActionType, hatcheries, BugType, bug_cost
+from Backend.GameMaster import perform_action
 
 
 class AproxBot(Player, ABC):
 
-    def __init__(self, side, score_function):
+    def __init__(self, side):
         super().__init__(side)
-        self.score_function = score_function
         self.valid_kills = []
 
     def get_valid_actions(self, game_state):
@@ -27,6 +31,10 @@ class AproxBot(Player, ABC):
 
     @abstractmethod
     def get_action(self, game_state):
+        pass
+
+    @abstractmethod
+    def get_score(self, game_state):
         pass
 
     def get_valid_kills(self, games_state):
@@ -60,3 +68,22 @@ class AproxBot(Player, ABC):
                 if game_state.board[x, y] == 0:
                     valid_actions.append((ActionType.HATCH, bug_type, hatch_id))
         return valid_actions
+
+    def choose_randomly(self, game_state):
+        valid_actions = self.get_valid_actions(game_state)
+        if len(valid_actions) == 1:
+            return valid_actions[0]
+        action = valid_actions[random.randint(0, len(valid_actions) - 2)]
+        return action
+
+    def choose_best(self, game_state):
+        best = (ActionType.PASS,), -np.inf
+        for action in self.get_valid_actions(game_state):
+            new_game_state = GameState(game_state)
+            perform_action(self.side, action, new_game_state)
+            score = self.get_score(new_game_state)
+            if score == best and random.randint(0, 1):
+                best = action, score
+            elif score > best[1]:
+                best = action, score
+        return best[0]

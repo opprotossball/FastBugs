@@ -3,8 +3,8 @@ import os
 
 import numpy as np
 import pygame
-from Backend.Board import valid_tile
-from Backend.info import resources, blocked_tiles
+from Backend.board import valid_tile
+from info import resources
 
 from Backend.Bug import decode_bug
 

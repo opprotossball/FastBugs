@@ -2,8 +2,8 @@ import math
 
 import numpy as np
 
-from Backend.info import BugType
-from Bug import Bug, decode_bug
+from info import BugType
+from Backend.Bug import decode_bug
 
 
 class Army:

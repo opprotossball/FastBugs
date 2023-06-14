@@ -5,7 +5,7 @@ import numpy as np
 # board layout
 board_array_size = 9
 board_size = 5
-resources = [(5, 1), (4, 4), (3, 7)]
+resources = [(5, 1), (4, 4), (3, 7)]  # [(5, 1), (5, 4), (2, 7)]
 white_hatchery = [(0, 5), (0, 4), (1, 3)]
 black_hatchery = [(7, 5), (8, 4), (8, 3)]
 hatcheries = [white_hatchery, black_hatchery]

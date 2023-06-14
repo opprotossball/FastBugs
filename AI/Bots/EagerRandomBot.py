@@ -1,10 +1,13 @@
 import random
-from AI.AproxBot import AproxBot
+from AI.Bots.AproxBot import AproxBot
 
 
 class EagerRandomBot(AproxBot):
+    def get_score(self, game_state):
+        pass
+
     def __init__(self, side):
-        super().__init__(side, -1)
+        super().__init__(side)
 
     def get_action(self, game_state):
         valid_actions = self.get_valid_actions(game_state)

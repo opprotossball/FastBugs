@@ -1,4 +1,4 @@
-from info import board_array_size, board_size, Direction, blocked_tiles
+from info import board_array_size, board_size, blocked_tiles
 
 neighs = [
     (0, 1),
